@@ -1,4 +1,6 @@
-from bank import Account, SavingsAccount, CurrentAccount, Bank
+from account import Account, SavingsAccount, CurrentAccount
+from bank import Bank
+
 
 bank = Bank("Nepal Bank")
 
@@ -11,8 +13,8 @@ bank.add_account(sujit)
 bank.add_account(somiyo)
 
 print("\n--- 1. Normal deposit and withdrawal ---")
-somiyo.deposit(5000)
-somiyo.withdraw(2000)
+somiyo.deposit(8000)
+somiyo.withdraw(4000)
 print(somiyo)
 
 print("Trying to deposit -500:")
