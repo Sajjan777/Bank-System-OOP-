@@ -5,7 +5,7 @@ class Account:
 
     next_account_number = 1001
 
-    def __init__(self, owner):
+    def __init__(self, owner: str) -> int:
         self.account_number = Account.next_account_number
         Account.next_account_number += 1
 
@@ -17,24 +17,23 @@ class Account:
     def balance(self):
         return self._balance
 
-    def _add_transaction(self, transaction_type, amount):
+    def _add_transaction(self, transaction_type: str, amount: int) -> bool:
         self.transactions.append(Transaction(transaction_type, amount, self._balance))
 
-    def deposit(self, amount, transaction_type="deposit"):
-        try:
-            if amount <= 0:
-                print("Error: deposit amount must be more than 0")
-                return False
+    def deposit(self, amount: int, transaction_type: str = "deposit") -> bool:
+        if not isinstance(amount, (int, float)):
+            raise TypeError("Amount must be a number.")
+        if amount <= 0:
+            print("Error: deposit amount must be more than 0")
+            return False
         
-            self._balance += amount
-            self._add_transaction(transaction_type, amount)
-            return True
-
-        except Exception as e:
-            e = "Invalid Input"
-            print(e)
+        self._balance += amount
+        self._add_transaction(transaction_type, amount)
+        return True
 
     def withdraw(self, amount: int, transaction_type: str = "withdraw") -> bool:
+        if not isinstance(amount, (int, float)):
+            raise TypeError("Amount must be a number.")
         if amount <= 0:
             print("Error: withdrawal amount must be more than 0")
             return False
@@ -48,7 +47,7 @@ class Account:
         return True
 
     def show_history(self):
-        print(f"Transaction history for #{self.account_number} {self.owner}:")
+        print(f"Transaction history for {self.account_number} {self.owner}:")
         if len(self.transactions) == 0:
             print("  No transactions yet")
         for transaction in self.transactions:
@@ -66,17 +65,17 @@ class SavingsAccount(Account):
         super().__init__(owner)
         self.interest_rate = interest_rate
 
-    def add_interest(self):
+    def add_interest(self, time):
         if self._balance <= 0:
             print("Error: no balance to add interest to")
             return False
 
-        interest = round(self._balance * self.interest_rate, 2) ## TODO: Time
+        interest = round(self._balance * self.interest_rate * time, 2)
         self._balance += interest
         self._add_transaction("interest", interest)
         return True
 
-    def withdraw(self, amount, transaction_type="withdraw"):
+    def withdraw(self, amount: int, transaction_type: str = "withdraw") -> bool:
         if amount > SavingsAccount.MAX_WITHDRAWAL:
             print(f"Error: savings accounts can't withdraw more than Rs. {SavingsAccount.MAX_WITHDRAWAL} at once")
             return False
@@ -86,7 +85,7 @@ class SavingsAccount(Account):
 
 class CurrentAccount(Account):
 
-    def __init__(self, owner, overdraft_limit):
+    def __init__(self, owner: str, overdraft_limit: int) -> bool:
         super().__init__(owner)
         self.overdraft_limit = overdraft_limit
 
