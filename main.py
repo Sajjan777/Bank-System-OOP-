@@ -2,63 +2,103 @@ from account import Account, SavingsAccount, CurrentAccount
 from bank import Bank
 
 
-bank = Bank("Nepal Bank")
+def ask_number(message):
+    while True:
+        try:
+            return int(input(message))
+        except ValueError:
+            print("Please enter a valid number.")
 
-sajjan = SavingsAccount("Sajjan", 0.05)
-sujit = CurrentAccount("Sujit", 5000)
-somiyo = Account("Somiyo")
 
-bank.add_account(sajjan)
-bank.add_account(sujit)
-bank.add_account(somiyo)
+bank = Bank("NIC ASIA Bank")
 
-print("\n--- 1. Normal deposit and withdrawal ---")
-somiyo.deposit(8000)
-somiyo.withdraw(4000)
-print(somiyo)
+while True:
+    print("\n---- NIC ASI Bank ----")
+    print("1. Create account")
+    print("2. Deposit")
+    print("3. Withdraw")
+    print("4. Transfer")
+    print("5. Add interest")
+    print("6. Transaction history")
+    print("7. Show all accounts")
+    print("0. Exit")
 
-print("Trying to deposit -500:")
-somiyo.deposit(-500)
-print(somiyo)
+    choice = input("Choose an option: ")
 
-print("\n--- 2. Insufficient balance ---")
-somiyo.withdraw(10000)
-print(somiyo)
+    if choice == "1":
+        print("1. Basic  2. Savings  3. Current")
+        account_type = input("Choose type: ")
+        name = input("Owner name: ")
 
-print("\n--- 3. Savings withdrawal limit ---")
-sajjan.deposit(20000)
-sajjan.withdraw(15000)
-sajjan.withdraw(5000)
-print(sajjan)
+        if account_type == "1":
+            account = Account(name)
+        elif account_type == "2":
+            rate = ask_number("Interest rate in %: ")
+            account = SavingsAccount(name, rate / 100)
+        elif account_type == "3":
+            limit = ask_number("Overdraft limit: ")
+            account = CurrentAccount(name, limit)
+        else:
+            print("Invalid type")
+            continue
 
-print("\n--- 4. Current account overdraft ---")
-sujit.deposit(2000)
-sujit.withdraw(5000)
-print(sujit)
-sujit.withdraw(3000)
-print(sujit)
+        bank.add_account(account)
+        print("Account created! Account number:", account.account_number)
 
-print("\n--- 5. Adding interest ---")
-sajjan.add_interest()
-print(sajjan)
+    elif choice == "2":
+        number = int(ask_number("Account number: "))
+        account = bank.find_account(number)
+        if account is None:
+            print("Account not found")
+        else:
+            amount = ask_number("Amount to deposit: ")
+            account.deposit(amount)
+            print(account)
 
-print("\n--- 6. Transfers ---")
-bank.transfer(1001, 1003, 4000)
-bank.transfer(1003, 1001, 50000)
-bank.transfer(1001, 9999, 1000)
+    elif choice == "3":
+        number = int(ask_number("Account number: "))
+        account = bank.find_account(number)
+        if account is None:
+            print("Account not found")
+        else:
+            amount = ask_number("Amount to withdraw: ")
+            try:
+                account.withdraw(amount)
+                print(account)
+            except ValueError as e:
+                print("Error:", e)
 
-print("\n--- 7. Balance is read-only ---")
-try:
-    somiyo.balance = 100
-except AttributeError:
-    print("Can't set balance directly")
+    elif choice == "4":
+        sender = int(ask_number("From account number: "))
+        receiver = int(ask_number("To account number: "))
+        amount = ask_number("Amount to transfer: ")
+        bank.transfer(sender, receiver, amount)
 
-print("\n--- Summary ---")
-bank.show_accounts()
-print("Total balance:", bank.total_balance())
-print("Number of accounts:", len(bank))
+    elif choice == "5":
+        number = int(ask_number("Savings account number: "))
+        account = bank.find_account(number)
+        if isinstance(account, SavingsAccount):
+            time = ask_number("Time in years: ")
+            account.add_interest(time)
+            print(account)
+        else:
+            print("Not a savings account")
 
-print()
-sajjan.show_history()
-print()
-somiyo.show_history()
+    elif choice == "6":
+        number = int(ask_number("Account number: "))
+        account = bank.find_account(number)
+        if account is None:
+            print("Account not found")
+        else:
+            account.show_history()
+
+    elif choice == "7":
+        bank.show_accounts()
+        print("Total balance:", bank.total_balance())
+
+    elif choice == "0":
+        print("Goodbye!")
+        break
+
+    else:
+        print("Invalid option")

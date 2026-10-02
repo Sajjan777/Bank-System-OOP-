@@ -1,25 +1,24 @@
 class Bank:
 
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
         self.accounts = []
 
     def add_account(self, account):
         self.accounts.append(account)
 
-    def find_account(self, account_number):
+    def find_account(self, account_number: int) -> None:
         for account in self.accounts:
             if account.account_number == account_number:
                 return account
         return None
 
-    def transfer(self, from_number, to_number, amount):
+    def transfer(self, from_number: int, to_number: int, amount: int) -> bool:
         sender = self.find_account(from_number)
         receiver = self.find_account(to_number)
 
         if sender is None or receiver is None:
-            print("Transfer failed: account not found")
-            return False
+            raise LookupError("Account not found")
 
         if sender.withdraw(amount, "transfer_out"):
             receiver.deposit(amount, "transfer_in")
